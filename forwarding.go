@@ -42,7 +42,12 @@ func (r *oauthProxy) proxyMiddleware(next http.Handler) http.Handler {
 		// @step: add the proxy forwarding headers
 		req.Header.Add("X-Forwarded-For", realIP(req))
 		req.Header.Set("X-Forwarded-Host", req.Host)
-		req.Header.Set("X-Forwarded-Proto", req.Header.Get("X-Forwarded-Proto"))
+
+		scheme := unsecureScheme
+		if req.TLS != nil {
+			scheme = secureScheme
+		}
+		req.Header.Set("X-Forwarded-Proto", defaultTo(req.Header.Get("X-Forwarded-Proto"), scheme))
 
 		// @step: add any custom headers to the request
 		for k, v := range r.config.Headers {
