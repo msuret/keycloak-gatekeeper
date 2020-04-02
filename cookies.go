@@ -60,6 +60,8 @@ func (r *oauthProxy) dropCookie(w http.ResponseWriter, host, name, value string,
 		cookie.SameSite = http.SameSiteStrictMode
 	case SameSiteLax:
 		cookie.SameSite = http.SameSiteLaxMode
+	case SameSiteNone:
+		cookie.SameSite = http.SameSiteNoneMode
 	}
 
 	http.SetCookie(w, cookie)
@@ -84,6 +86,8 @@ func (r *oauthProxy) getMaxCookieChunkLength(req *http.Request, cookieName strin
 		maxCookieChunkLength -= len("SameSite=Strict ")
 	case SameSiteLax:
 		maxCookieChunkLength -= len("SameSite=Lax ")
+	case SameSiteNone:
+		maxCookieChunkLength -= len("SameSite=None ")
 	}
 	if r.config.SecureCookie {
 		maxCookieChunkLength -= len("Secure")
